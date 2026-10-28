@@ -1,0 +1,24 @@
+CLOUDACCESS CHECKOUT INTEGRATION — TEST MODE
+
+Included
+- Preserves the existing catalogue, product detail view, cart and styling.
+- Loads the Razorpay Checkout script.
+- Calls the existing Cloudflare Worker POST /api/create-order endpoint.
+- Opens Razorpay Checkout using the returned keyId/orderId/amount/currency.
+- Posts Razorpay checkout response to POST /api/verify-payment and only shows verified success when the Worker returns verified:true.
+- Restricts checkout to exactly one Salesforce Admin Interview Guide (₹499), because the current Worker hard-codes that product and amount. Other products remain in the catalogue but cannot be paid for through this endpoint.
+
+IMPORTANT SAFETY / LAUNCH NOTES
+- The Worker response says mode: test-integration. Use Razorpay TEST credentials only for this test deployment. Do not accept live payments yet.
+- Automatic file delivery is NOT implemented. A successful test payment shows a notice; it does not deliver a file.
+- Before launch, implement secure post-payment fulfilment (e.g. backend-created expiring download link after verified/captured payment), test refunds/failure/cancel paths, and switch to live credentials only when ready.
+- Ensure Worker environment variables RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are configured as test credentials for this test. Never put the secret in frontend code.
+- Worker allowed origins must include https://cloudaccessdigital.com and https://www.cloudaccessdigital.com.
+
+DEPLOY
+1. Extract this ZIP.
+2. In the Cloudflare Pages/static website project currently serving cloudaccessdigital.com, upload/deploy ALL files together: index.html, app.js, styles.css, cloudaccess-logo.png.
+3. Do not upload this ZIP itself as the site.
+4. Visit https://cloudaccessdigital.com, hard-refresh (Ctrl+Shift+R), add exactly one Salesforce Admin Interview Guide, and click Proceed to payment.
+5. Complete a TEST payment using Razorpay's test checkout details; verify Cloudflare Worker logs show POST /api/create-order and POST /api/verify-payment.
+6. Do not attempt live payments until secure resource delivery and production settings are completed.
